@@ -1,12 +1,5 @@
 $(function() {
 
-  //populate preset selector
-  var presetSelector = $("#vizEditPreSel");
-  presetSelector.empty();
-  _.each(VIZ.presets, function(p, i) {
-    presetSelector.append('<option value="' + p + '">' + p + '</option>');
-  });
-
   //Preset controls
   $("#vizEditPreSel")
   .change(function () {
@@ -19,41 +12,7 @@ $(function() {
 
   });
 
-  var cyclePresets = true;
-  $("#vizPresetCycle")
-  .change(function () {
-    cyclePresets = $(this).is(':checked');
-
-    this.blur();
-  });
-
-  var presetCycle = function(val){
-    if(val || (cyclePresets && !VIZ.getPause())) {
-      $("#vizEditPreSel")
-      .val(VIZ.presets[Math.floor(Math.random() * VIZ.presets.length)])
-      .change();
-    }
-  };
-
-  presetCycle(true);
-  setInterval(presetCycle,22.5*1000);
-
-  var presetToggle = function(event){
-
-    if( event.which !== 37 &&  event.which !== 39 )	return;
-
-    if($(".CodeMirror-focused").length == 0) {
-      var offset = event.which  == 37 ? -1 : 1;
-
-      var sel = document.getElementById("vizEditPreSel");
-
-      sel.selectedIndex = (sel.selectedIndex + offset + sel.options.length) % sel.options.length;
-
-      $("#vizEditPreSel").change();
-    }
-  };
-  document.addEventListener('keydown', presetToggle, false);
-
+  VIZ.updatePreset("Geiss - Reaction Diffusion 2");
 
   $("#vizMeshResizeSel")
   .change(function () {
@@ -414,6 +373,7 @@ $(function() {
     });
 
     connectToAudioAnalyzer(endNode);
+    VIZ.setPause(false);
   };
 
   var onStreamError = function(e) {
@@ -425,100 +385,6 @@ $(function() {
                             onStream.bind(this),
                             onStreamError.bind(this));
   };
-
-  function createAudioNode(src) {
-
-    paused = true;
-    VIZ.setPause(true);
-    if (audioNode) $(audioNode).remove();
-    if (sourceNode) sourceNode.disconnect();
-
-    audioNode = new Audio();
-    audioNode.src = src;
-    audioNode.addEventListener("pause", function() {
-      paused = true;
-      VIZ.setPause(true);
-      $("#playPauseBut").text("Play");
-    });
-    audioNode.addEventListener("play",  function() {
-      paused = false;
-      VIZ.setPause(false);
-      $("#playPauseBut").text("Pause");
-    });
-    audioNode.addEventListener("canplay", function(e) {
-      console.log(audioNode);
-      sourceNode = context.createMediaElementSource(audioNode);
-      console.log(sourceNode);
-      connectToAudioAnalyzer(sourceNode);
-
-      startedAt = Date.now(); //because some parts of the code check for this
-      audioNode.play();
-
-      audioNode.addEventListener('ended', function(){
-        clearCurrTrack();
-      }, false);
-
-    }, false);
-
-  }
-
-  function loadFile(fURL) {
-    console.log("LOADING: " + fURL);
-
-    var urlSplit = fURL.split("/");
-    var songName = urlSplit[urlSplit.length-1].split(".")[0]
-
-    playlist.push({src : fURL,
-                   name: songName,
-                   type: "server"});
-
-    renderPlaylist();
-
-    if($("#playerAudio")[0].ended ||
-       $("#playerAudio")[0].played.length == 0) {
-      loadNextTrack();
-    }
-  }
-
-  function addSoundCloudTrack(trackID) {
-    playlist.push({src : 'http://api.soundcloud.com/tracks/' + trackID + '/stream?client_id=9c8b6312417527b0a987904b28e6bdba',
-                   name: "Doctor Who (Dubstep Remix) by SP3CtruM",
-                   type: "soundcloud"});
-
-    renderPlaylist();
-
-    if(waitingToPlay) {
-      waitingToPlay = false;
-      loadNextTrack();
-    }
-  }
-  window.addSCT = addSoundCloudTrack;
-
-  function playToggle() {
-    if(!loading && startedAt && !waitingToPlay && $(".CodeMirror-focused").length == 0) {
-
-      if(playlist.length > 0) {
-        var track = playlist[0];
-
-        if(track.type == "local") {
-          if(paused) {
-            playBufferSource();
-          }
-          else {
-            pauseBufferSource();
-          }
-        }
-        else if(track.type == "soundcloud") {
-          if(paused) {
-            audioNode.play();
-          }
-          else {
-            audioNode.pause();
-          }
-        }
-      }
-    }
-  }
 
   function initPlayer() {
     try {
@@ -687,12 +553,6 @@ $(function() {
       }
     });
 
-    $("#microphone").click(function () {
-      console.log("microphone!");
-      getMicrophoneInput();
-    });
-
-
     $("#localFileBut").click(function() {
       var fileSelector = $('<input type="file" accept="audio/*" multiple />');
 
@@ -708,4 +568,5 @@ $(function() {
   }
 
   initPlayer();
+  getMicrophoneInput();
 });
