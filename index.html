@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<!-- saved from url=(0042)http://butterchurn.neocities.org/demo.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>ButterChurn - WebGL Milkdrop Emulator</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script async="" src="./ButterChurn - WebGL Milkdrop Emulator_files/analytics.js"></script><script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                                })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+    </script>
+
+    <link rel="stylesheet" href="http://butterchurn.neocities.org/normalize.css">
+    <link rel="stylesheet" href="http://butterchurn.neocities.org/demo.css">
+
+    <link rel="stylesheet" href="http://butterchurn.neocities.org/main.css">
+
+    <!-- <link rel="stylesheet" href="js/lib/codemirror-3.18/lib/codemirror.css"> -->
+
+    <script type="text/javascript" src="./ButterChurn - WebGL Milkdrop Emulator_files/presetbase.js"></script>
+    <script type="text/javascript" src="./ButterChurn - WebGL Milkdrop Emulator_files/app.js"></script><style type="text/css"></style><script type="x-shader/x-vertex" id="vertShader">
+varying vec2 vUv;
+
+void main() {
+    vUv = uv;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+}
+</script>
+
+<script type="x-shader/x-fragment" id="warpFShaderStart">
+
+vec3 saturate(vec3 v){
+    return clamp(v, 0.0, 1.0);
+}
+
+vec3 lum(vec3 v){
+    return vec3(dot(v, vec3(0.32,0.49,0.29)));
+}
+
+uniform float time;
+uniform float decay;
+uniform float bass;
+uniform float mid;
+uniform float treb;
+uniform float vol;
+uniform float bass_att;
+uniform float mid_att;
+uniform float treb_att;
+uniform float vol_att;
+
+uniform float frame;
+uniform float fps;
+
+uniform float q1;
+uniform float q2;
+uniform float q3;
+uniform float q4;
+uniform float q5;
+uniform float q6;
+uniform float q7;
+uniform float q8;
+uniform float q9;
+uniform float q10;
+uniform float q11;
+uniform float q12;
+uniform float q13;
+uniform float q14;
+uniform float q15;
+uniform float q16;
+uniform float q17;
+uniform float q18;
+uniform float q19;
+uniform float q20;
+uniform float q21;
+uniform float q22;
+uniform float q23;
+uniform float q24;
+uniform float q25;
+uniform float q26;
+uniform float q27;
+uniform float q28;
+uniform float q29;
+uniform float q30;
+uniform float q31;
+uniform float q32;
+
+uniform vec4 _qa;
+uniform vec4 _qb;
+uniform vec4 _qc;
+uniform vec4 _qd;
+uniform vec4 _qe;
+uniform vec4 _qf;
+uniform vec4 _qg;
+uniform vec4 _qh;
+
+uniform vec4 slow_roam_cos;
+uniform vec4 roam_cos;
+uniform vec4 slow_roam_sin;
+uniform vec4 roam_sin;
+
+uniform vec2 resolution;
+uniform vec4 aspect;
+
+uniform vec4 texsize;
+uniform vec4 texsize_noise_lq;
+uniform vec4 texsize_noise_mq;
+uniform vec4 texsize_noise_hq;
+uniform vec4 texsize_noise_lq_lite;
+
+uniform float blur1_min;
+uniform float blur1_max;
+uniform float blur2_min;
+uniform float blur2_max;
+uniform float blur3_min;
+uniform float blur3_max;
+
+uniform float scale1;
+uniform float scale2;
+uniform float scale3;
+uniform float bias1;
+uniform float bias2;
+uniform float bias3;
+
+uniform vec4 rand_frame;
+uniform vec4 rand_preset;
+
+uniform int darken_center;
+uniform sampler2D chan0;
+uniform sampler2D sampler_main;
+uniform sampler2D sampler_fw_main;
+uniform sampler2D sampler_fc_main;
+uniform sampler2D sampler_pw_main;
+uniform sampler2D sampler_pc_main;
+uniform sampler2D sampler_blur1;
+uniform sampler2D sampler_blur2;
+uniform sampler2D sampler_blur3;
+uniform sampler2D sampler_noise_lq;
+uniform sampler2D sampler_noise_lq_lite;
+uniform sampler2D sampler_noise_mq;
+uniform sampler2D sampler_noise_hq;
+//uniform sampler3D sampler_noisevol_lq;
+//uniform sampler3D sampler_noisevol_hq;
+float PI = 3.14159265358979323846264;
+
+varying vec2 vUv;
+
+void main(void)
+{
+    vec2 uv = vUv;
+    vec2 uv_orig  = gl_FragCoord.xy / resolution.xy;
+    float rad = length(uv_orig - 0.5);
+    float ang = atan(uv_orig.y - 0.5, uv_orig.x - 0.5);
+    vec3 ret;
+
+    // Access sampler_main, because blur chans get messed up for some reason if it is never accessed
+    vec3 tmpderp  = texture2D(sampler_main,vUv).rgb;
+
+</script>
+
+<script type="x-shader/x-fragment" id="warpFShaderEnd">
+
+    //Darken Center
+    float darken_rad = 0.05;
+    if(darken_center == 1 &&
+       rad < darken_rad) {
+       ret = mix(ret, vec3(0.0,0.0,0.0),(1.0 - rad/darken_rad) * 3.0 / 32.0);
+    }
+
+    gl_FragColor = vec4(ret, 1.0);
+}
+</script>
+
+<script type="x-shader/x-fragment" id="warpFShaderCompatibility">
+// sample previous frame
+ret = texture2D(sampler_main,vUv).rgb;
+
+// darken (decay) over time
+ret *= decay;  //or try: ret -= 0.004;
+</script>
+
+<script type="x-shader/x-fragment" id="compositeFShaderStart">
+
+vec3 saturate(vec3 v){
+    return clamp(v, 0.0, 1.0);
+}
+
+vec3 lum(vec3 v){
+    return vec3(dot(v, vec3(0.32,0.49,0.29)));
+}
+
+vec3 calc_hue(vec3 hue_base[ 4 ], vec2 uv) {
+    vec3 tA = mix( hue_base[0], hue_base[1], uv.x );
+    vec3 tB = mix( hue_base[2], hue_base[3], uv.x );
+    return mix( tA, tB, uv.y );
+}
+
+uniform float time;
+uniform float gammaAdj;
+uniform float echo_zoom;
+uniform float echo_alpha;
+uniform float echo_orientation;
+uniform int invert;
+uniform int brighten;
+uniform int darken;
+uniform int solarize;
+uniform vec2 resolution;
+uniform vec4 aspect;
+
+uniform float bass;
+uniform float mid;
+uniform float treb;
+uniform float vol;
+uniform float bass_att;
+uniform float mid_att;
+uniform float treb_att;
+uniform float vol_att;
+
+uniform float frame;
+uniform float fps;
+
+uniform float q1;
+uniform float q2;
+uniform float q3;
+uniform float q4;
+uniform float q5;
+uniform float q6;
+uniform float q7;
+uniform float q8;
+uniform float q9;
+uniform float q10;
+uniform float q11;
+uniform float q12;
+uniform float q13;
+uniform float q14;
+uniform float q15;
+uniform float q16;
+uniform float q17;
+uniform float q18;
+uniform float q19;
+uniform float q20;
+uniform float q21;
+uniform float q22;
+uniform float q23;
+uniform float q24;
+uniform float q25;
+uniform float q26;
+uniform float q27;
+uniform float q28;
+uniform float q29;
+uniform float q30;
+uniform float q31;
+uniform float q32;
+
+uniform vec4 _qa;
+uniform vec4 _qb;
+uniform vec4 _qc;
+uniform vec4 _qd;
+uniform vec4 _qe;
+uniform vec4 _qf;
+uniform vec4 _qg;
+uniform vec4 _qh;
+
+uniform vec4 slow_roam_cos;
+uniform vec4 roam_cos;
+uniform vec4 slow_roam_sin;
+uniform vec4 roam_sin;
+
+uniform vec4 texsize;
+uniform vec4 texsize_noise_lq;
+uniform vec4 texsize_noise_mq;
+uniform vec4 texsize_noise_hq;
+uniform vec4 texsize_noise_lq_lite;
+
+uniform float blur1_min;
+uniform float blur1_max;
+uniform float blur2_min;
+uniform float blur2_max;
+uniform float blur3_min;
+uniform float blur3_max;
+
+uniform float scale1;
+uniform float scale2;
+uniform float scale3;
+uniform float bias1;
+uniform float bias2;
+uniform float bias3;
+
+uniform vec4 rand_frame;
+uniform vec4 rand_preset;
+
+uniform sampler2D sampler_main;
+uniform sampler2D sampler_fw_main;
+uniform sampler2D sampler_fc_main;
+uniform sampler2D sampler_pw_main;
+uniform sampler2D sampler_pc_main;
+uniform sampler2D sampler_blur1;
+uniform sampler2D sampler_blur2;
+uniform sampler2D sampler_blur3;
+uniform sampler2D sampler_noise_lq;
+uniform sampler2D sampler_noise_lq_lite;
+uniform sampler2D sampler_noise_mq;
+uniform sampler2D sampler_noise_hq;
+//uniform sampler3D sampler_noisevol_lq;
+//uniform sampler3D sampler_noisevol_hq;
+uniform vec3 hue_base[ 4 ];
+uniform float fShader;
+float PI = 3.14159265358979323846264;
+
+varying vec2 vUv;
+
+void main(void)
+{
+    vec2 uv = vUv;
+    vec2 uv_orig = vUv;
+    float rad = length(uv - 0.5);
+    float ang = atan(uv.y - 0.5, uv.x - 0.5);
+    vec3 ret;
+
+    vec3 hue_shader = calc_hue(hue_base, vUv);
+
+</script>
+
+<script type="x-shader/x-fragment" id="compositeFShaderEnd">
+
+    //ret = pow(ret, vec3( 1.0 / 2.2 )); //gamma correct
+
+    gl_FragColor = vec4(ret,1.0);
+}
+
+</script>
+
+<script type="x-shader/x-fragment" id="compositeFShaderCompatibility">
+
+float orient_x = (mod(echo_orientation, 2.0) > 0.0) ? -1.0 : 1.0;
+float orient_y = (echo_orientation >= 2.0) ? -1.0 : 1.0;
+vec2 uv_echo = (uv - 0.5)*(1.0 / echo_zoom)*vec2(orient_x, orient_y) + 0.5;
+
+ret = mix( texture2D(sampler_main, uv).rgb,
+           texture2D(sampler_main, uv_echo).rgb,
+           echo_alpha); //video echo
+
+ret *= gammaAdj; //gamma
+
+if(fShader >= 1.0) {
+    ret *= hue_shader; //old hue shader effect
+}
+else if(fShader > 0.001) {
+    ret *= (1.0 - fShader) + fShader*hue_shader;
+}
+
+if(invert > 0) ret = 1.0 - ret;
+if(brighten > 0) ret = sqrt(ret);
+if(darken > 0) ret = ret*ret;
+if(solarize > 0) ret = ret * (1.0 - ret) * 4.0;
+</script>
+
+    <script type="text/javascript" src="./ButterChurn - WebGL Milkdrop Emulator_files/demo.js"></script>
+
+</head>
+<body>
+
+    <div id="mainWrapper" style="display: block;">
+
+        <div id="info"></div>
+        <div id="staticinfo">
+            <br>
+            <div id="localFileBut">
+                Drag local audio files onto the window to load them or click here
+            </div>
+            <p id="demoORText">OR</p>
+            <div id="SCstreambut">
+                <img height="64" width="64" src="./ButterChurn - WebGL Milkdrop Emulator_files/uYPE7P2.jpg">
+                Stream Doctor Who (Dubstep Remix) by SP3CtruM
+                <a href="https://soundcloud.com/sp3ktrum/doctor-who-dubstep-remix"><img src="./ButterChurn - WebGL Milkdrop Emulator_files/YzUVlgG.png"></a>
+            </div>
+            <div id="microphone" style="cursor: pointer;">
+                Microphone!
+            </div>
+            <br>
+            ~ Controls ~
+            <br>
+            Press m to maximize renderer within window
+            <br>
+            Press f or double click renderer for full screen
+            <br>
+            Press left/right arrow to change presets
+        </div>
+        <div id="container">
+            
+        <div id="canvaswrapper" style="margin: auto; width: 800px;"><div id="stats" style="width: 80px; opacity: 0.9; cursor: pointer; position: absolute; right: 0px; bottom: 0px;"><div id="fps" style="padding: 0px 0px 3px 3px; text-align: left; display: block; background-color: rgb(0, 0, 34);"><div id="fpsText" style="color: rgb(0, 255, 255); font-family: Helvetica, Arial, sans-serif; font-size: 9px; font-weight: bold; line-height: 15px;">60 FPS (0-60)</div><div id="fpsGraph" style="position: relative; width: 74px; height: 30px; background-color: rgb(0, 255, 255);"><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12.3px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12.3px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12.3px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12.3px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12.3px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12.9px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12.3px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12.9px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12.3px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12.3px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12.3px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12.3px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12.3px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12.3px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12.3px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12.3px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12.3px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 25.5px; float: left; background-color: rgb(17, 17, 51);"></span><span style="width: 1px; height: 12px; float: left; background-color: rgb(17, 17, 51);"></span></div></div><div id="ms" style="padding: 0px 0px 3px 3px; text-align: left; display: none; background-color: rgb(0, 34, 0);"><div id="msText" style="color: rgb(0, 255, 0); font-family: Helvetica, Arial, sans-serif; font-size: 9px; font-weight: bold; line-height: 15px;">17 MS (5-158370)</div><div id="msGraph" style="position: relative; width: 74px; height: 30px; background-color: rgb(0, 255, 0);"><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.3px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.75px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.3px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.3px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.75px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.3px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.75px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.3px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.3px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.3px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.6px; float: left; background-color: rgb(17, 51, 17);"></span><span style="width: 1px; height: 27.45px; float: left; background-color: rgb(17, 51, 17);"></span></div></div></div><div style="opacity: 0.8; display: none; position: absolute; right: 0px; top: 0px;"><div style="padding: 0px 0px 3px 3px; text-align: left; background-color: rgb(255, 75, 0);"><div style="color: rgb(0, 0, 0); font-family: Helvetica, Arial, sans-serif; font-size: 12px; font-weight: bold; line-height: 20px;">Variable Monitor</div><div></div></div></div></div></div>
+    </div>
+
+
+    <div id="bottomWrapper" class="">
+        <div id="playerControlsWrapper">
+            <div id="playlistWrapper">
+                <div id="playlistBut">Playlist</div>
+                <div id="innerPlaylistWrapper" class="hidden" style="top: 0px;">
+                    <ul id="playlist"><li class="playing">Doctor Who (Dubstep Remix) by SP3CtruM</li></ul>
+                </div>
+            </div>
+            <div id="playerWrapper">
+                <div id="playPauseBut">Play</div>
+                <div id="nextTrackBut">Next</div>
+                <div id="trackProgress" style="background-image: -webkit-linear-gradient(left, orange 29.7893125753%, white 29.7893125753%);">&nbsp;</div>
+            </div>
+            <div id="settingsWrapper">
+                <div id="settingsBut">Settings </div>
+                <div id="innerSettingsWrapper" class="" style="top: -128px;">
+                    <div id="settings">
+                        <div>
+                            Distortion Grid Size (CPU Intensive):
+                            <select id="vizMeshResizeSel">
+                                <option value="8">8x8 </option>
+                                <option value="16">16x16</option>
+                                <option value="32" selected="true">32x32 (default)</option>
+                                <option value="64">64x64</option>
+                                <option value="96">96x96</option>
+                                <option value="128">128x128</option>
+                            </select>
+                            <br>
+                            Internal Render Size (GPU Intensive):
+                            <select id="vizRenderResizeSel">
+                                <option value="512">512x512</option>
+                                <option value="1024" selected="true">1024x1024 (default)</option>
+                                <option value="2048">2048x2048</option>
+                                <option value="4096">4096x4096</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="presetControlsWrapper">
+            Preset:
+            <select id="vizEditPreSel"><option value="3dRaGoNs &amp; Unchained - Dragon Science">3dRaGoNs &amp; Unchained - Dragon Science</option><option value="[Ishan] - Drug Addict (Jelly V3)">[Ishan] - Drug Addict (Jelly V3)</option><option value="_Aderrasi - Wanderer in Curved Space - mash0000 - faclempt kibitzing meshuggana schmaltz (Geiss color mix)">_Aderrasi - Wanderer in Curved Space - mash0000 - faclempt kibitzing meshuggana schmaltz (Geiss color mix)</option><option value="_Aderrasi - Wanderer in Curved Space - mash0000 - faclempt kibitzing meshuggana schmaltz (Geiss greyscale mix)">_Aderrasi - Wanderer in Curved Space - mash0000 - faclempt kibitzing meshuggana schmaltz (Geiss greyscale mix)</option><option value="_Che + Geiss - Escape (Psychedelic Mix)">_Che + Geiss - Escape (Psychedelic Mix)</option><option value="_Geiss - Artifact 01">_Geiss - Artifact 01</option><option value="_Geiss - Artifact 02">_Geiss - Artifact 02</option><option value="_Geiss - Artifact 03">_Geiss - Artifact 03</option><option value="_Geiss - Artifact 04">_Geiss - Artifact 04</option><option value="_Geiss - Artifact 05">_Geiss - Artifact 05</option><option value="_Geiss - Artifact 06">_Geiss - Artifact 06</option><option value="_Geiss - Artifact 07">_Geiss - Artifact 07</option><option value="_Geiss - Artifact 08">_Geiss - Artifact 08</option><option value="_Geiss - Artifact 09">_Geiss - Artifact 09</option><option value="_Geiss - Artifact 10">_Geiss - Artifact 10</option><option value="_Geiss - Artifact 11">_Geiss - Artifact 11</option><option value="_Geiss - Artifact 12">_Geiss - Artifact 12</option><option value="_Geiss - Artifact 13 (big waves)">_Geiss - Artifact 13 (big waves)</option><option value="_Geiss - beetle bore - color invert mirror Animated">_Geiss - beetle bore - color invert mirror Animated</option><option value="_Geiss - Confetti (Kaleidoscope Mix) 2">_Geiss - Confetti (Kaleidoscope Mix) 2</option><option value="_Geiss - Confetti (Kaleidoscope Mix)">_Geiss - Confetti (Kaleidoscope Mix)</option><option value="_Geiss - Cosmic Dust 2 - Trails 5z">_Geiss - Cosmic Dust 2 - Trails 5z</option><option value="_Geiss - Desert Rose 2">_Geiss - Desert Rose 2</option><option value="_Geiss - Digitalis">_Geiss - Digitalis</option><option value="_Geiss - Explosion Mod 1">_Geiss - Explosion Mod 1</option><option value="_Geiss - Kaleidoscope 1">_Geiss - Kaleidoscope 1</option><option value="_Geiss - MicroCheckers 3 HPF">_Geiss - MicroCheckers 3 HPF</option><option value="_Geiss - Motion Blur 2 (Relief Mix) c">_Geiss - Motion Blur 2 (Relief Mix) c</option><option value="_Geiss - Reaction Diffusion (Relief Mix)">_Geiss - Reaction Diffusion (Relief Mix)</option><option value="_Geiss - Reducto Absurdum">_Geiss - Reducto Absurdum</option><option value="_Geiss - Skin Dots Multi-layer 3 (mashup 2)">_Geiss - Skin Dots Multi-layer 3 (mashup 2)</option><option value="_Geiss - Skin Dots Multi-layer 3">_Geiss - Skin Dots Multi-layer 3</option><option value="_geiss_experimental__Aderrasi - Kevlar Ore Deposit - geiss core stripe mix">_geiss_experimental__Aderrasi - Kevlar Ore Deposit - geiss core stripe mix</option><option value="_geiss_experimental__wavefronts">_geiss_experimental__wavefronts</option><option value="_Mig_008">_Mig_008</option><option value="_Mig_009">_Mig_009</option><option value="_Mig_017">_Mig_017</option><option value="_Mig_024_version2">_Mig_024_version2</option><option value="_Mig_025">_Mig_025</option><option value="_Mig_031">_Mig_031</option><option value="_Mig_032_version3">_Mig_032_version3</option><option value="_Mig_039">_Mig_039</option><option value="_Mig_056">_Mig_056</option><option value="_Mig_059">_Mig_059</option><option value="_Mig_061">_Mig_061</option><option value="_Mig_079">_Mig_079</option><option value="_Mig_091">_Mig_091</option><option value="_Mig_091b">_Mig_091b</option><option value="_Mig_095">_Mig_095</option><option value="_Mig_145">_Mig_145</option><option value="_Mig_146">_Mig_146</option><option value="_Mig_177">_Mig_177</option><option value="_Mig_197">_Mig_197</option><option value="_Mig_197b">_Mig_197b</option><option value="_Mig_199">_Mig_199</option><option value="_Mig_208">_Mig_208</option><option value="_Mig_304 - geiss remix">_Mig_304 - geiss remix</option><option value="_Mig_304">_Mig_304</option><option value="_Mig_Oscilloscope002">_Mig_Oscilloscope002</option><option value="_Mig_Oscilloscope003_v2">_Mig_Oscilloscope003_v2</option><option value="_Mig_Oscilloscope005">_Mig_Oscilloscope005</option><option value="_Mig_Oscilloscope008">_Mig_Oscilloscope008</option><option value="_Mig_Oscilloscope021">_Mig_Oscilloscope021</option><option value="_Mig_Oscilloscope022 b">_Mig_Oscilloscope022 b</option><option value="_Mig_Oscilloscope022">_Mig_Oscilloscope022</option><option value="_Mig_Oscilloscope_010">_Mig_Oscilloscope_010</option><option value="_Rovastar + Geiss - Hurricane Nightmare (Posterize Mix)">_Rovastar + Geiss - Hurricane Nightmare (Posterize Mix)</option><option value="_Rovastar + Geiss - Hyperkaleidoscope Glow 2 Multitonal">_Rovastar + Geiss - Hyperkaleidoscope Glow 2 Multitonal</option><option value="AdamFX 2 Geiss - Mash-Up Sphere Xibit Graffiti Warp me Tydye4">AdamFX 2 Geiss - Mash-Up Sphere Xibit Graffiti Warp me Tydye4</option><option value="AdamFx 2 Geiss -Somewhat Distort Me 3_1">AdamFx 2 Geiss -Somewhat Distort Me 3_1</option><option value="Aderrasi + Flexi - Airhandler (Last Breath - Calm) [moebius morbid vision edit]">Aderrasi + Flexi - Airhandler (Last Breath - Calm) [moebius morbid vision edit]</option><option value="Aderrasi + Geiss - Airhandler (Kali Mix) - Canvas Mix">Aderrasi + Geiss - Airhandler (Kali Mix) - Canvas Mix</option><option value="Aderrasi + Geiss - Airhandler (Kali Mix) - Painterly Kaleidoscope 2">Aderrasi + Geiss - Airhandler (Kali Mix) - Painterly Kaleidoscope 2</option><option value="Aderrasi + Geiss - Airhandler (Kali Mix) - Painterly Tendrils Colorfast">Aderrasi + Geiss - Airhandler (Kali Mix) - Painterly Tendrils Colorfast</option><option value="Aderrasi + Geiss - Airhandler (Painterly Relief Mix)">Aderrasi + Geiss - Airhandler (Painterly Relief Mix)</option><option value="Aderrasi + Geiss - Airhandler (Square Mix)">Aderrasi + Geiss - Airhandler (Square Mix)</option><option value="Aderrasi - Agitator">Aderrasi - Agitator</option><option value="Aderrasi - Airhandler (Kali Mix) - Painterly (Geiss composite mix)">Aderrasi - Airhandler (Kali Mix) - Painterly (Geiss composite mix)</option><option value="Aderrasi - Airhandler (Kali Mix) - Painterly">Aderrasi - Airhandler (Kali Mix) - Painterly</option><option value="Aderrasi - Airhandler (Kali Mix)">Aderrasi - Airhandler (Kali Mix)</option><option value="Aderrasi - Airhandler (Last Breath - Calm)">Aderrasi - Airhandler (Last Breath - Calm)</option><option value="Aderrasi - Airhandler (Principle of Sharing)">Aderrasi - Airhandler (Principle of Sharing)</option><option value="Aderrasi - Bitterfeld (Crystal Border Mix)">Aderrasi - Bitterfeld (Crystal Border Mix)</option><option value="Aderrasi - Bow To Gravity">Aderrasi - Bow To Gravity</option><option value="Aderrasi - Brakefreak-bitcore tweak">Aderrasi - Brakefreak-bitcore tweak</option><option value="Aderrasi - Causeway of Dreams (Point Mix)">Aderrasi - Causeway of Dreams (Point Mix)</option><option value="Aderrasi - Chromatic Abyss (Refined Abyss Mix)">Aderrasi - Chromatic Abyss (Refined Abyss Mix)</option><option value="Aderrasi - Contortion (Escher′s Tunnel Mix)">Aderrasi - Contortion (Escher′s Tunnel Mix)</option><option value="Aderrasi - Contortion (Wide Twist Mix)">Aderrasi - Contortion (Wide Twist Mix)</option><option value="Aderrasi - Curse of the Mirror Emu">Aderrasi - Curse of the Mirror Emu</option><option value="Aderrasi - Ert (Wary Mix)">Aderrasi - Ert (Wary Mix)</option><option value="Aderrasi - Ghast (Full Circle Mix)">Aderrasi - Ghast (Full Circle Mix)</option><option value="Aderrasi - Ghast (Quarter Past Ghast Mix)">Aderrasi - Ghast (Quarter Past Ghast Mix)</option><option value="Aderrasi - Ghast Entity">Aderrasi - Ghast Entity</option><option value="Aderrasi - Halls Of Centrifuge">Aderrasi - Halls Of Centrifuge</option><option value="Aderrasi - Horvath′s Holistic Abyss">Aderrasi - Horvath′s Holistic Abyss</option><option value="Aderrasi - Kevlar Abyss">Aderrasi - Kevlar Abyss</option><option value="Aderrasi - Kevlar Ore Deposit">Aderrasi - Kevlar Ore Deposit</option><option value="Aderrasi - Kevlar Tunnel">Aderrasi - Kevlar Tunnel</option><option value="Aderrasi - Madness Teaches us to Fly">Aderrasi - Madness Teaches us to Fly</option><option value="Aderrasi - Party Mutant">Aderrasi - Party Mutant</option><option value="Aderrasi - Potion of Spirits">Aderrasi - Potion of Spirits</option><option value="Aderrasi - See">Aderrasi - See</option><option value="Aderrasi - Songflower (Moss Posy)">Aderrasi - Songflower (Moss Posy)</option><option value="Aderrasi - Storm of the Eye (Thunder) - mash0000 - quasi pseudo meta concentrics">Aderrasi - Storm of the Eye (Thunder) - mash0000 - quasi pseudo meta concentrics</option><option value="Aderrasi - The Lurker (Twin Mix) - Bitcore Tweak">Aderrasi - The Lurker (Twin Mix) - Bitcore Tweak</option><option value="Aderrasi - Tool of Construction - mash0000 - use the toilet to construct parliment">Aderrasi - Tool of Construction - mash0000 - use the toilet to construct parliment</option><option value="Aderrasi - Variants Of Eternity">Aderrasi - Variants Of Eternity</option><option value="Aderrasi - Veil of Steel (Steel Storm) - mash0000 - bob ross finally loses it">Aderrasi - Veil of Steel (Steel Storm) - mash0000 - bob ross finally loses it</option><option value="Aderrasi - Visitor">Aderrasi - Visitor</option><option value="Aderrasi - What cannot be">Aderrasi - What cannot be</option><option value="bdrv + al Eo.S.+Phat - licence to druel2a">bdrv + al Eo.S.+Phat - licence to druel2a</option><option value="beta106i - Airhandler (Radial Dreamers) - mash0000 - unload stones into black market torture houses">beta106i - Airhandler (Radial Dreamers) - mash0000 - unload stones into black market torture houses</option><option value="beta106i - Brilliance (Space-Time Breaking) - mash0000 - it′s 2009 and you haven′t replaced your analog tv with digital">beta106i - Brilliance (Space-Time Breaking) - mash0000 - it′s 2009 and you haven′t replaced your analog tv with digital</option><option value="beta106i - Burning Form (Seething Mass) - mash0000 - fire paint easter egg internals">beta106i - Burning Form (Seething Mass) - mash0000 - fire paint easter egg internals</option><option value="beta106i - Have at You (Spin Strike) - mash0000 - more the game of death, jesus conway">beta106i - Have at You (Spin Strike) - mash0000 - more the game of death, jesus conway</option><option value="beta106i - Inhuman Emotion (Regret) - mash0000 - genetic mutant incubators in the hands of toddlers">beta106i - Inhuman Emotion (Regret) - mash0000 - genetic mutant incubators in the hands of toddlers</option><option value="beta106i - Oversizer (Modernist Lane) - mash0000 - noone ever helps you unless you have something for them">beta106i - Oversizer (Modernist Lane) - mash0000 - noone ever helps you unless you have something for them</option><option value="beta106i - Potion of Ink">beta106i - Potion of Ink</option><option value="Bmelgren &amp; Krash - Rainbow Orb Peacock (Lonely Signal Gone Mad Mix)">Bmelgren &amp; Krash - Rainbow Orb Peacock (Lonely Signal Gone Mad Mix)</option><option value="Bmelgren &amp; Rovastar - Schisathing 2 - mash0000 - schrodinger′s dog massage">Bmelgren &amp; Rovastar - Schisathing 2 - mash0000 - schrodinger′s dog massage</option><option value="Bmelgren &amp; Rovastar - Schisathing 6 - mash0001 - hellraiser′s molten consciousness">Bmelgren &amp; Rovastar - Schisathing 6 - mash0001 - hellraiser′s molten consciousness</option><option value="Bmelgren + Geiss - Godhead (Canvas Mix)">Bmelgren + Geiss - Godhead (Canvas Mix)</option><option value="Bmelgren + Krash - Rainbow Orb Peacock (Centred Journey Mix 2)">Bmelgren + Krash - Rainbow Orb Peacock (Centred Journey Mix 2)</option><option value="Bmelgren - Pentultimate Nerual Slipstream (Tweak 2)">Bmelgren - Pentultimate Nerual Slipstream (Tweak 2)</option><option value="Boz - Flip′d Moshun - mash0000 - forced to exist freely">Boz - Flip′d Moshun - mash0000 - forced to exist freely</option><option value="Che - Escape">Che - Escape</option><option value="Che - Terracarbon Stream">Che - Terracarbon Stream</option><option value="cope + flexi - mother-of-whirl [no fnords were hurt]">cope + flexi - mother-of-whirl [no fnords were hurt]</option><option value="cope + martin - mother-of-pearl">cope + martin - mother-of-pearl</option><option value="cope - alternative energy (antimatter mod_1)4z">cope - alternative energy (antimatter mod_1)4z</option><option value="cope - the drain to heaven">cope - the drain to heaven</option><option value="Cope - The Neverending Explosion of Red Liquid Fire">Cope - The Neverending Explosion of Red Liquid Fire</option><option value="cope, martin + flexi - the slickery of alternative varnish">cope, martin + flexi - the slickery of alternative varnish</option><option value="EMPR - Random - Changing Polyevolution">EMPR - Random - Changing Polyevolution</option><option value="Eo.S.+Phat - detached centerpoint">Eo.S.+Phat - detached centerpoint</option><option value="Flexi + geiss - the deep diver′s manifesto [metaphorfree]">Flexi + geiss - the deep diver′s manifesto [metaphorfree]</option><option value="Flexi + Martin - cascading decay swing">Flexi + Martin - cascading decay swing</option><option value="Flexi + Rovastar - Fractopia [lovecraft]">Flexi + Rovastar - Fractopia [lovecraft]</option><option value="Flexi + stahlregen - jelly showoff parade">Flexi + stahlregen - jelly showoff parade</option><option value="Flexi - age of shading chaos">Flexi - age of shading chaos</option><option value="flexi - julia island [output stage]">flexi - julia island [output stage]</option><option value="flexi - julia set illuminating example [parameter play]">flexi - julia set illuminating example [parameter play]</option><option value="flexi - julia set illuminating example">flexi - julia set illuminating example</option><option value="flexi - julia set shader [neocortex wiretapping]">flexi - julia set shader [neocortex wiretapping]</option><option value="flexi - julia set shader example 2 (geiss sharpen mix)">flexi - julia set shader example 2 (geiss sharpen mix)</option><option value="flexi - julia set shader example 2">flexi - julia set shader example 2</option><option value="flexi - julia set shader example">flexi - julia set shader example</option><option value="flexi - lollipop overkill [bccn Jelly V4]">flexi - lollipop overkill [bccn Jelly V4]</option><option value="Flexi - predator-prey-spirals [geiss′ laplacian finish]">Flexi - predator-prey-spirals [geiss′ laplacian finish]</option><option value="Flexi - predator-prey-spirals [stahlregens gelatine finish]">Flexi - predator-prey-spirals [stahlregens gelatine finish]</option><option value="Flexi - psychenapping">Flexi - psychenapping</option><option value="flexi - swing out on the spiral">flexi - swing out on the spiral</option><option value="flexi - undercurrents 3 [geiss bipolar 1 mix] (Jelly 5.5)">flexi - undercurrents 3 [geiss bipolar 1 mix] (Jelly 5.5)</option><option value="Flexi, martin + geiss - dedicated to the sherwin maxawow">Flexi, martin + geiss - dedicated to the sherwin maxawow</option><option value="Flexi, Rovastar + Geiss - Fractopia vs bas relief">Flexi, Rovastar + Geiss - Fractopia vs bas relief</option><option value="Fvese - Rebirth (Progression Rot Mix)">Fvese - Rebirth (Progression Rot Mix)</option><option value="Fvese - Snowflake Like 2">Fvese - Snowflake Like 2</option><option value="Fvese - The Tunnel (Final Stage Mix)">Fvese - The Tunnel (Final Stage Mix)</option><option value="Fvese - Zoom Effects (Remix 2)">Fvese - Zoom Effects (Remix 2)</option><option value="Fvese - Zoom Effects (Remix 3)">Fvese - Zoom Effects (Remix 3)</option><option value="Fvese-butterfly">Fvese-butterfly</option><option value="Geiss + Rovastar - Notions Of Tonality 2">Geiss + Rovastar - Notions Of Tonality 2</option><option value="Geiss + Rovastar - Tokamak (Naked Intrusion Mix)">Geiss + Rovastar - Tokamak (Naked Intrusion Mix)</option><option value="Geiss - 3 layers (Minefield Mix)">Geiss - 3 layers (Minefield Mix)</option><option value="Geiss - 3 layers (Planar Mix)">Geiss - 3 layers (Planar Mix)</option><option value="Geiss - 3 layers (Rayleigh Scattering Mix)">Geiss - 3 layers (Rayleigh Scattering Mix)</option><option value="Geiss - 3 layers (Tunnel Mix)">Geiss - 3 layers (Tunnel Mix)</option><option value="Geiss - 3 layers E">Geiss - 3 layers E</option><option value="Geiss - 3 layers G">Geiss - 3 layers G</option><option value="Geiss - 3 layers">Geiss - 3 layers</option><option value="Geiss - All-Spark - mash0000 - high on voltage">Geiss - All-Spark - mash0000 - high on voltage</option><option value="Geiss - Artifact 6">Geiss - Artifact 6</option><option value="Geiss - Artifact 6b">Geiss - Artifact 6b</option><option value="Geiss - Artifact 6d">Geiss - Artifact 6d</option><option value="Geiss - Artifact Plasma 2">Geiss - Artifact Plasma 2</option><option value="Geiss - Artifact Plasma">Geiss - Artifact Plasma</option><option value="Geiss - Asymptote">Geiss - Asymptote</option><option value="Geiss - Aurora 2">Geiss - Aurora 2</option><option value="Geiss - Aurora Industrialis">Geiss - Aurora Industrialis</option><option value="Geiss - Aurora">Geiss - Aurora</option><option value="Geiss - Bas Relief - mash0000 - restructure society one sheep at a time">Geiss - Bas Relief - mash0000 - restructure society one sheep at a time</option><option value="Geiss - Bas Relief">Geiss - Bas Relief</option><option value="Geiss - Bass Zoom">Geiss - Bass Zoom</option><option value="Geiss - beetle bore - color invert mirror x">Geiss - beetle bore - color invert mirror x</option><option value="Geiss - Bipolar 1">Geiss - Bipolar 1</option><option value="Geiss - Bipolar 2 Enhanced">Geiss - Bipolar 2 Enhanced</option><option value="Geiss - Bipolar 5">Geiss - Bipolar 5</option><option value="Geiss - Blur Mix 3">Geiss - Blur Mix 3</option><option value="Geiss - Brain Zoom">Geiss - Brain Zoom</option><option value="Geiss - Cartographie">Geiss - Cartographie</option><option value="Geiss - Casino">Geiss - Casino</option><option value="Geiss - Cauldron - painterly (saturation remix)">Geiss - Cauldron - painterly (saturation remix)</option><option value="Geiss - Cauldron - painterly 2 (saturation remix)">Geiss - Cauldron - painterly 2 (saturation remix)</option><option value="Geiss - Cauldron - painterly 2">Geiss - Cauldron - painterly 2</option><option value="Geiss - Cauldron - painterly 3 (saturation remix)">Geiss - Cauldron - painterly 3 (saturation remix)</option><option value="Geiss - Cauldron - painterly 3">Geiss - Cauldron - painterly 3</option><option value="Geiss - Cauldron - painterly 4 (saturation remix)">Geiss - Cauldron - painterly 4 (saturation remix)</option><option value="Geiss - Cauldron - painterly 4">Geiss - Cauldron - painterly 4</option><option value="Geiss - Cauldron - painterly 5 (saturation remix)">Geiss - Cauldron - painterly 5 (saturation remix)</option><option value="Geiss - Cauldron - painterly 5">Geiss - Cauldron - painterly 5</option><option value="Geiss - Cauldron - painterly">Geiss - Cauldron - painterly</option><option value="Geiss - Cauldron - Tendrils (saturation remix)">Geiss - Cauldron - Tendrils (saturation remix)</option><option value="Geiss - Cauldron - Tendrils">Geiss - Cauldron - Tendrils</option><option value="Geiss - Cepia Dither">Geiss - Cepia Dither</option><option value="Geiss - Color Pox (Acid Impression Mix) (color saturation remix)">Geiss - Color Pox (Acid Impression Mix) (color saturation remix)</option><option value="Geiss - Color Pox (Acid Impression Mix)">Geiss - Color Pox (Acid Impression Mix)</option><option value="Geiss - Color Pox (Measles Mix)">Geiss - Color Pox (Measles Mix)</option><option value="Geiss - Color Pox (Van Gogh Mix) (color saturation remix)">Geiss - Color Pox (Van Gogh Mix) (color saturation remix)</option><option value="Geiss - Color Pox (Van Gogh Mix)">Geiss - Color Pox (Van Gogh Mix)</option><option value="Geiss - Confetti (color saturation boosted)">Geiss - Confetti (color saturation boosted)</option><option value="Geiss - Confetti (Kaleidoscope Mix) (color saturation boosted)">Geiss - Confetti (Kaleidoscope Mix) (color saturation boosted)</option><option value="Geiss - Confetti (Kaleidoscope Mix)">Geiss - Confetti (Kaleidoscope Mix)</option><option value="Geiss - Confetti">Geiss - Confetti</option><option value="Geiss - Constant Velocity - glow">Geiss - Constant Velocity - glow</option><option value="Geiss - Cosmic Dust 2 (Reverse Jelly V3) (brighter)">Geiss - Cosmic Dust 2 (Reverse Jelly V3) (brighter)</option><option value="Geiss - Cosmic Dust 2 (Reverse Jelly V3)">Geiss - Cosmic Dust 2 (Reverse Jelly V3)</option><option value="Geiss - Cosmic Dust 2 - Game of Life mix">Geiss - Cosmic Dust 2 - Game of Life mix</option><option value="Geiss - Cosmic Dust 2 - Laplacian Mix">Geiss - Cosmic Dust 2 - Laplacian Mix</option><option value="Geiss - Cosmic Dust 2 - quasistatic noise desat trails 2">Geiss - Cosmic Dust 2 - quasistatic noise desat trails 2</option><option value="Geiss - Cosmic Dust 2 - quasistatic noise desat trails">Geiss - Cosmic Dust 2 - quasistatic noise desat trails</option><option value="Geiss - Cosmic Dust 2 - quasistatic noise dual pane window">Geiss - Cosmic Dust 2 - quasistatic noise dual pane window</option><option value="Geiss - Cosmic Dust 2 - static noise">Geiss - Cosmic Dust 2 - static noise</option><option value="Geiss - Cosmic Dust 2 - Tiny Reaction Diffusion Mix">Geiss - Cosmic Dust 2 - Tiny Reaction Diffusion Mix</option><option value="Geiss - Cosmic Dust 2 - Trails 5b">Geiss - Cosmic Dust 2 - Trails 5b</option><option value="Geiss - Cosmic Dust 2 - Trails 7">Geiss - Cosmic Dust 2 - Trails 7</option><option value="Geiss - Cosmic Dust 2">Geiss - Cosmic Dust 2</option><option value="Geiss - Cruzin′">Geiss - Cruzin′</option><option value="Geiss - Cycloid 1 - painterly vortex 3">Geiss - Cycloid 1 - painterly vortex 3</option><option value="Geiss - Cycloid 1 - painterly vortex">Geiss - Cycloid 1 - painterly vortex</option><option value="Geiss - Cycloid 1 - painterly">Geiss - Cycloid 1 - painterly</option><option value="Geiss - Dancing Spirits (Bright)">Geiss - Dancing Spirits (Bright)</option><option value="Geiss - Dancing Spirits">Geiss - Dancing Spirits</option><option value="Geiss - De La Moutard 1">Geiss - De La Moutard 1</option><option value="Geiss - Digitunnel">Geiss - Digitunnel</option><option value="Geiss - Downward Spiral - color invert mirror x">Geiss - Downward Spiral - color invert mirror x</option><option value="Geiss - Dynamic Swirls 2 - max invert">Geiss - Dynamic Swirls 2 - max invert</option><option value="Geiss - Eggs">Geiss - Eggs</option><option value="Geiss - El Cubismo 2">Geiss - El Cubismo 2</option><option value="Geiss - El Cubismo">Geiss - El Cubismo</option><option value="Geiss - Electric Storm Half-Digital 2 (Fiesta Mix)">Geiss - Electric Storm Half-Digital 2 (Fiesta Mix)</option><option value="Geiss - Explosion">Geiss - Explosion</option><option value="Geiss - Flower Blossom">Geiss - Flower Blossom</option><option value="Geiss - Flower">Geiss - Flower</option><option value="Geiss - Fog Tunnel">Geiss - Fog Tunnel</option><option value="Geiss - Fog Zone">Geiss - Fog Zone</option><option value="Geiss - Four Kinds of Amphetamines (color sat boosted)">Geiss - Four Kinds of Amphetamines (color sat boosted)</option><option value="Geiss - Four Kinds of Amphetamines">Geiss - Four Kinds of Amphetamines</option><option value="Geiss - Game of Life 2">Geiss - Game of Life 2</option><option value="Geiss - Game of Life 3">Geiss - Game of Life 3</option><option value="Geiss - Game of Life">Geiss - Game of Life</option><option value="Geiss - Hurricane">Geiss - Hurricane</option><option value="Geiss - Hyperion (LSB mix)">Geiss - Hyperion (LSB mix)</option><option value="Geiss - Inkblot">Geiss - Inkblot</option><option value="Geiss - Iris Storm">Geiss - Iris Storm</option><option value="Geiss - Iris">Geiss - Iris</option><option value="Geiss - Julia Fractal 2">Geiss - Julia Fractal 2</option><option value="Geiss - Julia Fractal 3 square mix">Geiss - Julia Fractal 3 square mix</option><option value="Geiss - Julia Fractal 3">Geiss - Julia Fractal 3</option><option value="Geiss - Kaleidoscope 1">Geiss - Kaleidoscope 1</option><option value="Geiss - Lightning">Geiss - Lightning</option><option value="Geiss - Liquid Beats (janky ripple warp reflecto)">Geiss - Liquid Beats (janky ripple warp reflecto)</option><option value="geiss - liquid beats (jelly v4.5)">geiss - liquid beats (jelly v4.5)</option><option value="Geiss - Liquid Beats 2 (Reverse Jelly V3)">Geiss - Liquid Beats 2 (Reverse Jelly V3)</option><option value="Geiss - Liquid Beats 2">Geiss - Liquid Beats 2</option><option value="Geiss - Liquid Beats">Geiss - Liquid Beats</option><option value="Geiss - Luz">Geiss - Luz</option><option value="Geiss - Mash-Up 1">Geiss - Mash-Up 1</option><option value="Geiss - Mash-Up 4">Geiss - Mash-Up 4</option><option value="Geiss - Mega Swirl 2">Geiss - Mega Swirl 2</option><option value="Geiss - Mega Swirl 3 (color tweak)">Geiss - Mega Swirl 3 (color tweak)</option><option value="Geiss - Mega Swirl 3">Geiss - Mega Swirl 3</option><option value="Geiss - MicroCheckers 2">Geiss - MicroCheckers 2</option><option value="Geiss - MicroCheckers 3">Geiss - MicroCheckers 3</option><option value="Geiss - MicroCheckers 5 (brighter)">Geiss - MicroCheckers 5 (brighter)</option><option value="Geiss - MicroCheckers 5">Geiss - MicroCheckers 5</option><option value="Geiss - Mosaic Octopus 7">Geiss - Mosaic Octopus 7</option><option value="Geiss - Mosaic Octopus">Geiss - Mosaic Octopus</option><option value="Geiss - Motion Blur 2 (color sat boost)">Geiss - Motion Blur 2 (color sat boost)</option><option value="Geiss - Motion Blur 2 (Jelly V3)">Geiss - Motion Blur 2 (Jelly V3)</option><option value="Geiss - Motion Blur 2 (Relief Mix 2)">Geiss - Motion Blur 2 (Relief Mix 2)</option><option value="Geiss - Motion Blur 2 (Relief Mix)">Geiss - Motion Blur 2 (Relief Mix)</option><option value="Geiss - Motion Blur 2 (Reverse Jelly V3)">Geiss - Motion Blur 2 (Reverse Jelly V3)</option><option value="Geiss - Motion Blur 2 (Stahl′s Neon Jelly 2 RMX)">Geiss - Motion Blur 2 (Stahl′s Neon Jelly 2 RMX)</option><option value="Geiss - Motion Blur 2">Geiss - Motion Blur 2</option><option value="Geiss - Motion Blur">Geiss - Motion Blur</option><option value="Geiss - Octopus">Geiss - Octopus</option><option value="Geiss - Pistons">Geiss - Pistons</option><option value="Geiss - Planet 1">Geiss - Planet 1</option><option value="Geiss - Plasma 2">Geiss - Plasma 2</option><option value="Geiss - Plasma">Geiss - Plasma</option><option value="Geiss - Reaction Diffusion (Puddle Mix)">Geiss - Reaction Diffusion (Puddle Mix)</option><option value="Geiss - Reaction Diffusion (Relief Mix)">Geiss - Reaction Diffusion (Relief Mix)</option><option value="Geiss - Reaction Diffusion (Royal Crown Mix)">Geiss - Reaction Diffusion (Royal Crown Mix)</option><option value="Geiss - Reaction Diffusion (Shifting Sphere Mix)">Geiss - Reaction Diffusion (Shifting Sphere Mix)</option><option value="Geiss - Reaction Diffusion (Squamous Flow Mix)">Geiss - Reaction Diffusion (Squamous Flow Mix)</option><option value="Geiss - Reaction Diffusion - Simple Squamous Mix">Geiss - Reaction Diffusion - Simple Squamous Mix</option><option value="Geiss - Reaction Diffusion 2">Geiss - Reaction Diffusion 2</option><option value="Geiss - Reaction Diffusion 3 (Lichen Mix)">Geiss - Reaction Diffusion 3 (Lichen Mix)</option><option value="geiss - reaction diffusion 3 (rippling leopard skin)">geiss - reaction diffusion 3 (rippling leopard skin)</option><option value="Geiss - Reaction Diffusion 3">Geiss - Reaction Diffusion 3</option><option value="Geiss - Reducto Absurdum">Geiss - Reducto Absurdum</option><option value="Geiss - Reducto Ad Nauseum">Geiss - Reducto Ad Nauseum</option><option value="Geiss - Ribbons">Geiss - Ribbons</option><option value="Geiss - Rose 3">Geiss - Rose 3</option><option value="Geiss - Rose 4 (bccn Jelly V4)">Geiss - Rose 4 (bccn Jelly V4)</option><option value="Geiss - Rose 4 (composite remix)">Geiss - Rose 4 (composite remix)</option><option value="Geiss - Rose 4 (LSB mix)">Geiss - Rose 4 (LSB mix)</option><option value="Geiss - Rose 4">Geiss - Rose 4</option><option value="Geiss - Rose 5 Crossfire Beats (composite remix)">Geiss - Rose 5 Crossfire Beats (composite remix)</option><option value="Geiss - Rose 5 Crossfire Beats - mash0000 - ill gotten slobber catcher">Geiss - Rose 5 Crossfire Beats - mash0000 - ill gotten slobber catcher</option><option value="Geiss - Rose 5 Crossfire Beats">Geiss - Rose 5 Crossfire Beats</option><option value="Geiss - Sinews 1">Geiss - Sinews 1</option><option value="Geiss - Skin Dots 10">Geiss - Skin Dots 10</option><option value="Geiss - Skin Dots 10b">Geiss - Skin Dots 10b</option><option value="Geiss - Skin Dots 10c">Geiss - Skin Dots 10c</option><option value="Geiss - Skin Dots 11 Crossfire Composite">Geiss - Skin Dots 11 Crossfire Composite</option><option value="Geiss - Skin Dots 11b">Geiss - Skin Dots 11b</option><option value="Geiss - Skin Dots 3">Geiss - Skin Dots 3</option><option value="Geiss - Skin Dots 6">Geiss - Skin Dots 6</option><option value="Geiss - Skin Dots 8b">Geiss - Skin Dots 8b</option><option value="Geiss - Skin Dots 9">Geiss - Skin Dots 9</option><option value="Geiss - Skin Dots Multi-layer 1">Geiss - Skin Dots Multi-layer 1</option><option value="Geiss - Skin Dots Multi-layer 3 - pig fuck - jembe acid wretch dildonic">Geiss - Skin Dots Multi-layer 3 - pig fuck - jembe acid wretch dildonic</option><option value="Geiss - Skin Dots Multi-layer 3">Geiss - Skin Dots Multi-layer 3</option><option value="Geiss - Smoke Rings">Geiss - Smoke Rings</option><option value="Geiss - Soft">Geiss - Soft</option><option value="Geiss - Sound And The Fury (Jelly V3)">Geiss - Sound And The Fury (Jelly V3)</option><option value="Geiss - Sound And The Fury">Geiss - Sound And The Fury</option><option value="Geiss - Spiral Artifact">Geiss - Spiral Artifact</option><option value="Geiss - Starfish 2">Geiss - Starfish 2</option><option value="Geiss - Sunsets">Geiss - Sunsets</option><option value="Geiss - Swirlie 1">Geiss - Swirlie 1</option><option value="Geiss - Swirlie 2">Geiss - Swirlie 2</option><option value="Geiss - Swirlie 4">Geiss - Swirlie 4</option><option value="Geiss - Tadpole Hunter">Geiss - Tadpole Hunter</option><option value="Geiss - Thumb Drum">Geiss - Thumb Drum</option><option value="Geiss - Tokamak Plus 2">Geiss - Tokamak Plus 2</option><option value="Geiss - Tokamak Plus 3">Geiss - Tokamak Plus 3</option><option value="Geiss - Tokamak Plus 4">Geiss - Tokamak Plus 4</option><option value="Geiss - Tokamak Plus Painterly">Geiss - Tokamak Plus Painterly</option><option value="Geiss - Trampoline">Geiss - Trampoline</option><option value="Geiss - Two-Pointed Pulsagon">Geiss - Two-Pointed Pulsagon</option><option value="Geiss - Virus 2">Geiss - Virus 2</option><option value="Geiss - Vortex 1 (color sat boosted)">Geiss - Vortex 1 (color sat boosted)</option><option value="Geiss - Vortex 1">Geiss - Vortex 1</option><option value="Geiss - Vortex 2 Painterly">Geiss - Vortex 2 Painterly</option><option value="Geiss - Waterfall">Geiss - Waterfall</option><option value="Geiss and Zylot - Reaction Diffusion 3 (Overload Mix 2)">Geiss and Zylot - Reaction Diffusion 3 (Overload Mix 2)</option><option value="Geiss, Flexi + Stahlregen - Thumbdrum Tokamak [crossfiring aftermath jelly mashup]">Geiss, Flexi + Stahlregen - Thumbdrum Tokamak [crossfiring aftermath jelly mashup]</option><option value="Goody - Aurora Totalis">Goody - Aurora Totalis</option><option value="Goody - Need - Desire remix">Goody - Need - Desire remix</option><option value="Goody - Need - Transcendance remix">Goody - Need - Transcendance remix</option><option value="Goody - Need">Goody - Need</option><option value="hexcollie - Alex2">hexcollie - Alex2</option><option value="Hexcollie - Meatball">Hexcollie - Meatball</option><option value="Hexcollie, Aderassi, BDRV, AdamFX n Flexi - It′s a start">Hexcollie, Aderassi, BDRV, AdamFX n Flexi - It′s a start</option><option value="Hexcollie, Bdrv, Geiss, Flexi n Aderrasi - Slime Slide - mash0000 - holster your salad shot">Hexcollie, Bdrv, Geiss, Flexi n Aderrasi - Slime Slide - mash0000 - holster your salad shot</option><option value="Idiot - 9-7-02 (Remix 2)">Idiot - 9-7-02 (Remix 2)</option><option value="Idiot - 9-7-02">Idiot - 9-7-02</option><option value="Idiot - Marphets Surreal Dream (Hypnotic Spiral Mix)">Idiot - Marphets Surreal Dream (Hypnotic Spiral Mix)</option><option value="idiot - Spectrum">idiot - Spectrum</option><option value="Idiot - Star Of Annon">Idiot - Star Of Annon</option><option value="Idiot - Subnormal Trance (Remix)">Idiot - Subnormal Trance (Remix)</option><option value="Idiot - Tentacle Dreams">Idiot - Tentacle Dreams</option><option value="Idiot - What Is">Idiot - What Is</option><option value="Idiot - When I Get Bored">Idiot - When I Get Bored</option><option value="Idiot24-7 - Ascending to heaven 2">Idiot24-7 - Ascending to heaven 2</option><option value="Illusion &amp; Boz - Hot Air Balloon">Illusion &amp; Boz - Hot Air Balloon</option><option value="Illusion &amp; Boz - Lord Of Stars 1">Illusion &amp; Boz - Lord Of Stars 1</option><option value="Illusion &amp; Rovastar - Clouded Bottle">Illusion &amp; Rovastar - Clouded Bottle</option><option value="Illusion &amp; Rovastar - Dotty Mad Space (Jelly)">Illusion &amp; Rovastar - Dotty Mad Space (Jelly)</option><option value="Illusion &amp; Unchained - New Strategy">Illusion &amp; Unchained - New Strategy</option><option value="Illusion - Dance Of The Planets">Illusion - Dance Of The Planets</option><option value="Illusion - Heavenly Eye - radial blur">Illusion - Heavenly Eye - radial blur</option><option value="Ishan - Anuera">Ishan - Anuera</option><option value="Jim &amp; Geiss - Bass Zoom Symmetry - mash0000 - the god damn pen is rrrroyal blue">Jim &amp; Geiss - Bass Zoom Symmetry - mash0000 - the god damn pen is rrrroyal blue</option><option value="Krash &amp; Rovastar - A Million Miles from Earth (Ripple Mix)">Krash &amp; Rovastar - A Million Miles from Earth (Ripple Mix)</option><option value="Krash &amp; Rovastar - The Devil Is In The Details">Krash &amp; Rovastar - The Devil Is In The Details</option><option value="Krash + Illusion + Geiss - Spiral Movement (Reaction Diffusion mix)">Krash + Illusion + Geiss - Spiral Movement (Reaction Diffusion mix)</option><option value="Krash + Illusion - Spiral Movement">Krash + Illusion - Spiral Movement</option><option value="Krash + Rovastar - Rainbow Orb 2 Peacock (Bmelgren′s Compelling Vision)">Krash + Rovastar - Rainbow Orb 2 Peacock (Bmelgren′s Compelling Vision)</option><option value="Krash + Rovastar - Rainbow Orb">Krash + Rovastar - Rainbow Orb</option><option value="Krash + TEcHNO - Rhythmic Mantas - Painterly">Krash + TEcHNO - Rhythmic Mantas - Painterly</option><option value="Krash - Aenema tweak 4">Krash - Aenema tweak 4</option><option value="Krash - Digital Flame">Krash - Digital Flame</option><option value="Krash - Snowflake Halo">Krash - Snowflake Halo</option><option value="Krash - Swelling Spiral 2">Krash - Swelling Spiral 2</option><option value="Krash - Vinyl Disk">Krash - Vinyl Disk</option><option value="Krash - War Machine (Shifting Complexity Mix)">Krash - War Machine (Shifting Complexity Mix)</option><option value="LuxXx - God is in the Radio v..6">LuxXx - God is in the Radio v..6</option><option value="LuxXx - Hurty Soul I">LuxXx - Hurty Soul I</option><option value="martin - volcano">martin - volcano</option><option value="Mstress + Zylot - Acid UFO">Mstress + Zylot - Acid UFO</option><option value="niko radiative bunchess - i′m gonna break my rusty cage, and run (the fuck grunge isn′t the source of anarchy)">niko radiative bunchess - i′m gonna break my rusty cage, and run (the fuck grunge isn′t the source of anarchy)</option><option value="nil - Did You Speak with the Orb">nil - Did You Speak with the Orb</option><option value="nil - Vortex of Vortices">nil - Vortex of Vortices</option><option value="Phat + Zylot + Eo.S. - work with lines">Phat + Zylot + Eo.S. - work with lines</option><option value="Phat_Eo.S. - our own personal demon">Phat_Eo.S. - our own personal demon</option><option value="Phat_Rovastar_Eo.S. square_faces_v2">Phat_Rovastar_Eo.S. square_faces_v2</option><option value="Phat_Zylot_Eo.S. spiral_faces_v2">Phat_Zylot_Eo.S. spiral_faces_v2</option><option value="Phat_Zylot_Eo.S. spiral_Movements_Beatle">Phat_Zylot_Eo.S. spiral_Movements_Beatle</option><option value="Phat_Zylot_Eo.S. spiral_Movements_Beatle_square.mix">Phat_Zylot_Eo.S. spiral_Movements_Beatle_square.mix</option><option value="Phat_Zylot_Eo.S. square_faces_v2_alt_colours">Phat_Zylot_Eo.S. square_faces_v2_alt_colours</option><option value="Phat_Zylot_Eo.S. strate lines">Phat_Zylot_Eo.S. strate lines</option><option value="Phat_Zylot_Eo.S. Trippy_rotation_v2_sector_mix_alt_colours">Phat_Zylot_Eo.S. Trippy_rotation_v2_sector_mix_alt_colours</option><option value="Phat_Zylot_Eo.S. Trippy_rotation_weird_boxs mix">Phat_Zylot_Eo.S. Trippy_rotation_weird_boxs mix</option><option value="Phat_Zylot_Eo.S. work with lines">Phat_Zylot_Eo.S. work with lines</option><option value="Phat_Zylot_Eo.S._Krash I_hope_someone_will_see_this_triping_v2b">Phat_Zylot_Eo.S._Krash I_hope_someone_will_see_this_triping_v2b</option><option value="Reenen - phoenix">Reenen - phoenix</option><option value="Rocke - Answer.42 (New Mix 1) - mash0000 - slash and char p. jungle">Rocke - Answer.42 (New Mix 1) - mash0000 - slash and char p. jungle</option><option value="Rocke - Cold Love (Tei Zwaa)">Rocke - Cold Love (Tei Zwaa)</option><option value="Rocke - LoZ Tribute">Rocke - LoZ Tribute</option><option value="Rocke - Personal Comet">Rocke - Personal Comet</option><option value="Rovastar &amp; Aderrasi - Airs Of Change">Rovastar &amp; Aderrasi - Airs Of Change</option><option value="Rovastar &amp; Che - Definitly Not For The Epileptic (Inner Perspective Of Life Mix)">Rovastar &amp; Che - Definitly Not For The Epileptic (Inner Perspective Of Life Mix)</option><option value="Rovastar &amp; Idiot24-7 - Balk Acid">Rovastar &amp; Idiot24-7 - Balk Acid</option><option value="Rovastar &amp; Idiot24-7 - Marphet′s Shrine">Rovastar &amp; Idiot24-7 - Marphet′s Shrine</option><option value="Rovastar &amp; Krash - Rainbow Deflection">Rovastar &amp; Krash - Rainbow Deflection</option><option value="Rovastar &amp; Unchained - Ambrosia Mystic (Dark Heart Mix)">Rovastar &amp; Unchained - Ambrosia Mystic (Dark Heart Mix)</option><option value="Rovastar &amp; Unchained - Demonology (Vampire Soul Mix)">Rovastar &amp; Unchained - Demonology (Vampire Soul Mix)</option><option value="Rovastar + Che - Asylum Animations">Rovastar + Che - Asylum Animations</option><option value="Rovastar + Flexi - Hurricane Nightmare (Moebius Mix)">Rovastar + Flexi - Hurricane Nightmare (Moebius Mix)</option><option value="Rovastar + Fvese - Mosaic Waves">Rovastar + Fvese - Mosaic Waves</option><option value="Rovastar + Fvese - Paranormal Static">Rovastar + Fvese - Paranormal Static</option><option value="Rovastar + Geiss - Approach (Vectrip Mix) - painterly">Rovastar + Geiss - Approach (Vectrip Mix) - painterly</option><option value="Rovastar + Geiss - Bipolar 2 (Vectrip Mix)">Rovastar + Geiss - Bipolar 2 (Vectrip Mix)</option><option value="Rovastar + Geiss - Braindance 1 (Reverse Jelly V3)">Rovastar + Geiss - Braindance 1 (Reverse Jelly V3)</option><option value="Rovastar + Geiss - Dynamic Swirls 3 (Voyage Of Twisted Souls Mix)">Rovastar + Geiss - Dynamic Swirls 3 (Voyage Of Twisted Souls Mix)</option><option value="Rovastar + Geiss - Hurricane Nightmare (Gold Chrome Mix)">Rovastar + Geiss - Hurricane Nightmare (Gold Chrome Mix)</option><option value="Rovastar + Geiss - Hurricane Nightmare (Relief Mix)">Rovastar + Geiss - Hurricane Nightmare (Relief Mix)</option><option value="Rovastar + Geiss - Hurricane Nightmare">Rovastar + Geiss - Hurricane Nightmare</option><option value="Rovastar + Geiss - Hyperkaleidoscope Glow 2 motion blur (Jelly)">Rovastar + Geiss - Hyperkaleidoscope Glow 2 motion blur (Jelly)</option><option value="Rovastar + Geiss - Hyperkaleidoscope Glow 2 motion blur">Rovastar + Geiss - Hyperkaleidoscope Glow 2 motion blur</option><option value="Rovastar + Geiss - Hyperspace - kaleidoscope">Rovastar + Geiss - Hyperspace - kaleidoscope</option><option value="Rovastar + Geiss - Snapshot Of Space (LSB mix)">Rovastar + Geiss - Snapshot Of Space (LSB mix)</option><option value="Rovastar + Rocke - Sugar Spun Sister - Painterly">Rovastar + Rocke - Sugar Spun Sister - Painterly</option><option value="Rovastar + Rocke - Sugar Spun Sister">Rovastar + Rocke - Sugar Spun Sister</option><option value="Rovastar + Telek - Altars of Madness (Rolling Oceans Mix)">Rovastar + Telek - Altars of Madness (Rolling Oceans Mix)</option><option value="Rovastar + Unchained - Ambrosia Mystic (Dark Heart Mix)">Rovastar + Unchained - Ambrosia Mystic (Dark Heart Mix)</option><option value="Rovastar + Unchained - Life After Pie (Remix)">Rovastar + Unchained - Life After Pie (Remix)</option><option value="Rovastar + Unchained - Oddball World">Rovastar + Unchained - Oddball World</option><option value="Rovastar + Unchained - Voodoo Chess Magnet (Everglow Mix)">Rovastar + Unchained - Voodoo Chess Magnet (Everglow Mix)</option><option value="Rovastar + Unchained - Xen Traffic">Rovastar + Unchained - Xen Traffic</option><option value="Rovastar + Zylot - Narell′s Fever">Rovastar + Zylot - Narell′s Fever</option><option value="Rovastar + Zylot - Urza′s Revenge">Rovastar + Zylot - Urza′s Revenge</option><option value="Rovastar - A Million Miles From Earth (Wormhole Mix)">Rovastar - A Million Miles From Earth (Wormhole Mix)</option><option value="Rovastar - Altars Of Harlequin′s Madness">Rovastar - Altars Of Harlequin′s Madness</option><option value="Rovastar - Altars Of Madness 4 (Spirit Of Twisted Madness Mix)">Rovastar - Altars Of Madness 4 (Spirit Of Twisted Madness Mix)</option><option value="Rovastar - Braindance 1">Rovastar - Braindance 1</option><option value="Rovastar - Cosmic Echoes 2">Rovastar - Cosmic Echoes 2</option><option value="Rovastar - Destiny Star (Starbrust Mix)">Rovastar - Destiny Star (Starbrust Mix)</option><option value="Rovastar - Explosive Minds">Rovastar - Explosive Minds</option><option value="Rovastar - Fractopia (Fantic Dancing Lights Mix)">Rovastar - Fractopia (Fantic Dancing Lights Mix)</option><option value="Rovastar - Fractopia (Galaxy Swirl Mix)">Rovastar - Fractopia (Galaxy Swirl Mix)</option><option value="Rovastar - Fractopia (Upspoken Mix)">Rovastar - Fractopia (Upspoken Mix)</option><option value="Rovastar - Halcyon Dreams 3">Rovastar - Halcyon Dreams 3</option><option value="Rovastar - Hallucinogenic Pyramids (Beat Time Mix)">Rovastar - Hallucinogenic Pyramids (Beat Time Mix)</option><option value="Rovastar - Harlequin′s &amp; Jester′s Dual Delight (Chaotic Nightmare Mix)">Rovastar - Harlequin′s &amp; Jester′s Dual Delight (Chaotic Nightmare Mix)</option><option value="Rovastar - Harlequin′s Dynamic Fractal 3">Rovastar - Harlequin′s Dynamic Fractal 3</option><option value="Rovastar - Harlequin′s Fractal Encounter">Rovastar - Harlequin′s Fractal Encounter</option><option value="Rovastar - Harlequin′s Liquid Dragon">Rovastar - Harlequin′s Liquid Dragon</option><option value="Rovastar - Hyperspace (Hyper Speed Mix)">Rovastar - Hyperspace (Hyper Speed Mix)</option><option value="Rovastar - Hyperspace">Rovastar - Hyperspace</option><option value="Rovastar - Jester′s Calling 2">Rovastar - Jester′s Calling 2</option><option value="Rovastar - Jester′s Surreal Tornado (Further Vortex Mix)">Rovastar - Jester′s Surreal Tornado (Further Vortex Mix)</option><option value="Rovastar - Jester′s Surreal Tornado">Rovastar - Jester′s Surreal Tornado</option><option value="Rovastar - LabFunk">Rovastar - LabFunk</option><option value="Rovastar - Oozing Resistance">Rovastar - Oozing Resistance</option><option value="Rovastar - Snapshot Of Space">Rovastar - Snapshot Of Space</option><option value="Rovastar - Solarized Space">Rovastar - Solarized Space</option><option value="Rovastar - Starquake (Sunquake Mix)">Rovastar - Starquake (Sunquake Mix)</option><option value="Rovastar - Torrid Tales">Rovastar - Torrid Tales</option><option value="Rovastar - Trippy Sperm (Jelly)">Rovastar - Trippy Sperm (Jelly)</option><option value="Rovastar - Virtual Horizons (Jelly V3)">Rovastar - Virtual Horizons (Jelly V3)</option><option value="Rovastar - VooV′s Light Pattern">Rovastar - VooV′s Light Pattern</option><option value="Rovastar - VooV′s Movement (After Dark Mix) - Painterly">Rovastar - VooV′s Movement (After Dark Mix) - Painterly</option><option value="Rovastar - VooV′s Movement (After Dark Mix)">Rovastar - VooV′s Movement (After Dark Mix)</option><option value="Rovastar - VooV′s Naked Movement (Pincushion Mix)">Rovastar - VooV′s Naked Movement (Pincushion Mix)</option><option value="Rovastar - VooV′s Organic Light">Rovastar - VooV′s Organic Light</option><option value="Rovastar - Xtal">Rovastar - Xtal</option><option value="Rovastar&amp;StudioMusic-MoreCherish">Rovastar&amp;StudioMusic-MoreCherish</option><option value="Rozzor &amp; Aderrasi - Canon">Rozzor &amp; Aderrasi - Canon</option><option value="Rozzor &amp; Che - Inside The House Of Nil">Rozzor &amp; Che - Inside The House Of Nil</option><option value="Rozzor &amp; Rovastar - Shame Turns inTo Change">Rozzor &amp; Rovastar - Shame Turns inTo Change</option><option value="Rozzor &amp; Unchained - Crescat Scientia, Vita Excolatur">Rozzor &amp; Unchained - Crescat Scientia, Vita Excolatur</option><option value="Rozzor + Idiot - Any Other Deep Rising">Rozzor + Idiot - Any Other Deep Rising</option><option value="Rozzor - Learning Curve (Invert Tweak)">Rozzor - Learning Curve (Invert Tweak)</option><option value="ShadowHarlequin - mashup - Satin Sunburst (Neon Tokyo Megamix) v1">ShadowHarlequin - mashup - Satin Sunburst (Neon Tokyo Megamix) v1</option><option value="shadowharlequin, cope - alternative energy (antimatter mod_1) - [rave dreams]">shadowharlequin, cope - alternative energy (antimatter mod_1) - [rave dreams]</option><option value="Stahlregen &amp; AdamFx + Eo.S + Flexi + Geiss + Phat + Rovastar + Zylot - Fractopia Kaleidoscope (MashUp 32 RMX)">Stahlregen &amp; AdamFx + Eo.S + Flexi + Geiss + Phat + Rovastar + Zylot - Fractopia Kaleidoscope (MashUp 32 RMX)</option><option value="Stahlregen &amp; AdamFx + Eo.S + Flexi + Geiss + Phat + Rovastar + Zylot - Fractopia Kaleidoscope">Stahlregen &amp; AdamFx + Eo.S + Flexi + Geiss + Phat + Rovastar + Zylot - Fractopia Kaleidoscope</option><option value="Stahlregen &amp; Benski + Fvese + Geiss + Rovastar - Voyager Spark (Call Jester′s Smashing Atoms RMX)_1">Stahlregen &amp; Benski + Fvese + Geiss + Rovastar - Voyager Spark (Call Jester′s Smashing Atoms RMX)_1</option><option value="Stahlregen &amp; Boz + Eo.S + Geiss + Phat + Rovastar + Zylot - Machine Code (Relief Block Mix)">Stahlregen &amp; Boz + Eo.S + Geiss + Phat + Rovastar + Zylot - Machine Code (Relief Block Mix)</option><option value="Stahlregen &amp; Boz + Eo.S + Geiss + Phat + Rovastar + Zylot - Machine Code [Jelly]">Stahlregen &amp; Boz + Eo.S + Geiss + Phat + Rovastar + Zylot - Machine Code [Jelly]</option><option value="Stahlregen &amp; Che + Geiss + Illusion + Unchained - Shifty (Jelly V2)">Stahlregen &amp; Che + Geiss + Illusion + Unchained - Shifty (Jelly V2)</option><option value="Stahlregen &amp; Esotic + Idiot24-7 + Rozzer + Zylot - Digital Heartbeat (Reverse Jelly V3)">Stahlregen &amp; Esotic + Idiot24-7 + Rozzer + Zylot - Digital Heartbeat (Reverse Jelly V3)</option><option value="Stahlregen &amp; flexi + Geiss + martin + Rovastar - Tides (martin′s metallics)">Stahlregen &amp; flexi + Geiss + martin + Rovastar - Tides (martin′s metallics)</option><option value="Stahlregen &amp; Flexi + Geiss + Rovastar + Unchained - Blurred Echoes (reflecto fucukp)">Stahlregen &amp; Flexi + Geiss + Rovastar + Unchained - Blurred Echoes (reflecto fucukp)</option><option value="stahlregen &amp; flexi + geiss - tiger no.5 (mashup 16 - random texture flow) - inf fin bnd">stahlregen &amp; flexi + geiss - tiger no.5 (mashup 16 - random texture flow) - inf fin bnd</option><option value="Stahlregen &amp; Geiss + Eo.S + Martin + Rovastar - Halcyon Jelly Skin">Stahlregen &amp; Geiss + Eo.S + Martin + Rovastar - Halcyon Jelly Skin</option><option value="Stahlregen &amp; Geiss + Rovastar + Illusion + Krash + Rozzor - Cyclopean Shift (Eyeless Mix)">Stahlregen &amp; Geiss + Rovastar + Illusion + Krash + Rozzor - Cyclopean Shift (Eyeless Mix)</option><option value="Stahlregen &amp; Geiss + Rovastar - Fields of Flowers (distorted)">Stahlregen &amp; Geiss + Rovastar - Fields of Flowers (distorted)</option><option value="Stahlregen &amp; Geiss + TobiasWolfBoi - Space Gelatin (Color Xplosion 2)">Stahlregen &amp; Geiss + TobiasWolfBoi - Space Gelatin (Color Xplosion 2)</option><option value="Stahlregen &amp; Geiss + TobiasWolfBoi - Space Gelatin (Color Xplosion)">Stahlregen &amp; Geiss + TobiasWolfBoi - Space Gelatin (Color Xplosion)</option><option value="Stahlregen &amp; Geiss - MashUp 16 (Seizure-Inducing Confetti Kaleidoscope RMX)">Stahlregen &amp; Geiss - MashUp 16 (Seizure-Inducing Confetti Kaleidoscope RMX)</option><option value="Stahlregen &amp; Geiss - Tiger No.5 (Seizure-Inducing Confetti Kaleidoscope RMX)_2">Stahlregen &amp; Geiss - Tiger No.5 (Seizure-Inducing Confetti Kaleidoscope RMX)_2</option><option value="Studio Music - Cherished Desires">Studio Music - Cherished Desires</option><option value="Studio Music and Unchained - Rapid Alteration">Studio Music and Unchained - Rapid Alteration</option><option value="Stuttler - LSD Bloom">Stuttler - LSD Bloom</option><option value="suksma - creepy children steal your identity">suksma - creepy children steal your identity</option><option value="TEcHNO &amp; SandStorm - Psychodelic Highway">TEcHNO &amp; SandStorm - Psychodelic Highway</option><option value="TEcHNO + SandStorm - Psychodelic Highway">TEcHNO + SandStorm - Psychodelic Highway</option><option value="Telek - City Helix Lattice">Telek - City Helix Lattice</option><option value="Telek - Sine Wave">Telek - Sine Wave</option><option value="Telek - Slow Thing (Spiderman Mix)">Telek - Slow Thing (Spiderman Mix)</option><option value="TobiasWolfBoi - The Pit">TobiasWolfBoi - The Pit</option><option value="Tschoey - Music Flower">Tschoey - Music Flower</option><option value="Unchained &amp; Rovastar - Luckless">Unchained &amp; Rovastar - Luckless</option><option value="Unchained &amp; Rovastar - Rainbow Obscura">Unchained &amp; Rovastar - Rainbow Obscura</option><option value="Unchained &amp; Rovastar - Waves Of Waves">Unchained &amp; Rovastar - Waves Of Waves</option><option value="Unchained &amp; Rovastar - Wormhole Pillars (Hall of Shadows mix)">Unchained &amp; Rovastar - Wormhole Pillars (Hall of Shadows mix)</option><option value="Unchained &amp; Rovastar - Xen Traffic">Unchained &amp; Rovastar - Xen Traffic</option><option value="Unchained + Geiss - Furious Spirals (Blur and Glow Remix)">Unchained + Geiss - Furious Spirals (Blur and Glow Remix)</option><option value="Unchained + Geiss - Furious Spirals (Canvas Mix)">Unchained + Geiss - Furious Spirals (Canvas Mix)</option><option value="Unchained - All You Can Eat">Unchained - All You Can Eat</option><option value="Unchained - Beat Demo (Demonology Mix)">Unchained - Beat Demo (Demonology Mix)</option><option value="Unchained - Beat Demo 1.0">Unchained - Beat Demo 1.0</option><option value="Unchained - Beat Demo 2.1">Unchained - Beat Demo 2.1</option><option value="Unchained - Beat Demo 2.4">Unchained - Beat Demo 2.4</option><option value="Unchained - Beat Demo 2.5">Unchained - Beat Demo 2.5</option><option value="Unchained - Beyond The Strife Nexus">Unchained - Beyond The Strife Nexus</option><option value="Unchained - Cartoon Factory">Unchained - Cartoon Factory</option><option value="Unchained - Cranked On Failure">Unchained - Cranked On Failure</option><option value="Unchained - Custom Gramatix (Remix)">Unchained - Custom Gramatix (Remix)</option><option value="Unchained - Demonology">Unchained - Demonology</option><option value="Unchained - Free to Feel (Valium Remix)">Unchained - Free to Feel (Valium Remix)</option><option value="Unchained - Furious Spirals (Remix) Radial Blur">Unchained - Furious Spirals (Remix) Radial Blur</option><option value="Unchained - Fuzzy Sciences">Unchained - Fuzzy Sciences</option><option value="Unchained - Ghostlight Whisper">Unchained - Ghostlight Whisper</option><option value="Unchained - Goofy Beat Detection">Unchained - Goofy Beat Detection</option><option value="Unchained - Hard Science">Unchained - Hard Science</option><option value="Unchained - Housed In A Childish Mind">Unchained - Housed In A Childish Mind</option><option value="Unchained - In Memory Of Peg">Unchained - In Memory Of Peg</option><option value="Unchained - Jaded Emotion">Unchained - Jaded Emotion</option><option value="Unchained - Making a Science of It 2">Unchained - Making a Science of It 2</option><option value="Unchained - Making a Science of It 3">Unchained - Making a Science of It 3</option><option value="Unchained - Making a Science of It 4">Unchained - Making a Science of It 4</option><option value="Unchained - Making a Science of It 7">Unchained - Making a Science of It 7</option><option value="Unchained - Making a Science of It">Unchained - Making a Science of It</option><option value="Unchained - Morat′s Final Voyage">Unchained - Morat′s Final Voyage</option><option value="Unchained - Not As Fun As It Looks">Unchained - Not As Fun As It Looks</option><option value="Unchained - Perverted Dialect">Unchained - Perverted Dialect</option><option value="Unchained - Picture Of Exile">Unchained - Picture Of Exile</option><option value="Unchained - Picture Of Poison">Unchained - Picture Of Poison</option><option value="Unchained - Quine">Unchained - Quine</option><option value="Unchained - Rewop">Unchained - Rewop</option><option value="Unchained - Ribald Ballad">Unchained - Ribald Ballad</option><option value="Unchained - Spinal Mixdown 2">Unchained - Spinal Mixdown 2</option><option value="Unchained - Subjective Experience Of The Manifold">Unchained - Subjective Experience Of The Manifold</option><option value="Unchained - Those Who Doubted">Unchained - Those Who Doubted</option><option value="Unchained - Unclaimed Wreckage 2 (Hemi-Sync)">Unchained - Unclaimed Wreckage 2 (Hemi-Sync)</option><option value="Unchained - Unclaimed Wreckage 2 (Sub-Spinal Daemon)">Unchained - Unclaimed Wreckage 2 (Sub-Spinal Daemon)</option><option value="Unchained - Unified Drag 2">Unchained - Unified Drag 2</option><option value="Unchained - Unified Drag">Unchained - Unified Drag</option><option value="various artists - 1200774354134 - mash0000 - what the writer′s guild is doing with the extra money">various artists - 1200774354134 - mash0000 - what the writer′s guild is doing with the extra money</option><option value="Wulfson - Crumple (Nth Power Mix)">Wulfson - Crumple (Nth Power Mix)</option><option value="yin - 030 - Dance with the ocean">yin - 030 - Dance with the ocean</option><option value="yin - 051 - Van Gogh′s nightmare (in depth) - bitcore tweak">yin - 051 - Van Gogh′s nightmare (in depth) - bitcore tweak</option><option value="yin - 100 - Through the ether - Bitcore Tweak">yin - 100 - Through the ether - Bitcore Tweak</option><option value="yin - 102 - Through the ether (The separation) - Bitcore Tweak">yin - 102 - Through the ether (The separation) - Bitcore Tweak</option><option value="yin - 140 - Ohm to the stars">yin - 140 - Ohm to the stars</option><option value="yin - 160 - Controversial">yin - 160 - Controversial</option><option value="yin - 190 - Temporal fluctuations">yin - 190 - Temporal fluctuations</option><option value="yin - 191 - Temporal singularities">yin - 191 - Temporal singularities</option><option value="Zylot &amp; Idiot24-7 - Unknown Power Source">Zylot &amp; Idiot24-7 - Unknown Power Source</option><option value="Zylot &amp; Rovastar - A Million Miles From Earth (Fog Of Time Mix (Vessel reMix) )">Zylot &amp; Rovastar - A Million Miles From Earth (Fog Of Time Mix (Vessel reMix) )</option><option value="Zylot &amp; Rovastar - Sully′s Trip (The Worstest Mix)">Zylot &amp; Rovastar - Sully′s Trip (The Worstest Mix)</option><option value="Zylot - Digiscape Advanced Processor">Zylot - Digiscape Advanced Processor</option><option value="Zylot - In death there is life (Geiss Layered Mix) (Jelly)">Zylot - In death there is life (Geiss Layered Mix) (Jelly)</option><option value="Zylot - In death there is life (Geiss Layered Mix)">Zylot - In death there is life (Geiss Layered Mix)</option><option value="Zylot - light of the path">Zylot - light of the path</option><option value="Zylot - Magma Crawl">Zylot - Magma Crawl</option></select>
+            Cycle
+            <input id="vizPresetCycle" type="checkbox" name="pcycle" value="PresetCycle" checked="">
+        </div>
+    </div>
+
+
+
+</body></html>
