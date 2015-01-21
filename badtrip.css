@@ -9,3 +9,13 @@ body {
   margin-bottom: 1em;
   color : #9FB4CC;
 }
+
+footer {
+	text-align: center;
+	color : #9FB4CC;
+	margin-top: 10px;
+}
+
+footer a {
+	color : #6AAB97;
+}
