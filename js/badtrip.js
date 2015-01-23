@@ -367,6 +367,7 @@ $(function() {
       convolver1.buffer = assets.rythm;
       convolver2.buffer = assets.spatialized;
       convolver3.buffer = assets.matrix;
+      setNextRandomPreset();
     });
 
     connectToAudioAnalyzer(endNode);
@@ -403,5 +404,4 @@ $(function() {
 
   initPlayer();
   getMicrophoneInput();
-  setNextRandomPreset();
 });
