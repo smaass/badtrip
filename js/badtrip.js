@@ -297,7 +297,7 @@ $(function() {
     matrix: 0,
     spatialized: 0,
     allLoaded: function () {
-      return this.rythm != 0 && this.matrix != 0; && this.spatialized != 0;
+      return this.rythm != 0 && this.matrix != 0 && this.spatialized != 0;
     },
     load: function (callback) {
       this.callback = callback;
