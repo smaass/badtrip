@@ -147,7 +147,7 @@ $(function() {
     new Preset("Unchained - Subjective Experience Of The Manifold", 3, 10),
     new Preset("Unchained - Unclaimed Wreckage 2 (Sub-Spinal Daemon)", 3, 10),
     new Preset("yin - 100 - Through the ether - Bitcore Tweak", 3, 10),
-    new Preset("yin - 191 - Temporal singularities",31,105)
+    new Preset("yin - 191 - Temporal singularities", 3, 10)
   ];
 
   var currentPreset = 0;
@@ -297,7 +297,7 @@ $(function() {
     matrix: 0,
     spatialized: 0,
     allLoaded: function () {
-      return this.rythm != 0 && this.matrix != 0;
+      return this.rythm != 0 && this.matrix != 0; && this.spatialized != 0;
     },
     load: function (callback) {
       this.callback = callback;
